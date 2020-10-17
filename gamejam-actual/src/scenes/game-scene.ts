@@ -62,7 +62,6 @@ export class GameScene extends Phaser.Scene {
     this.generateChunk(0);
 
     this.createTextBox();
-    this.populateTextBox('');
 
     this.setupBombs();
   }
@@ -95,17 +94,13 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createTextBox(): void {
-    const px = this.player.getCenter().x;
-    const py = this.player.getCenter().y;
+    const px = getGameWidth(this) / 2;
+    const py = 64;
     this.textBox = this.add.text(px, py, '', { fill: '#FFFFFF' }).setFontSize(24);
+    this.textBox.setScrollFactor(0);
   }
 
   private populateTextBox(string: string) {
-    const px = this.player.getCenter().x;
-    const py = this.player.getCenter().y;
-
-    this.textBox.setX(px);
-    this.textBox.setY(py - 500);
     this.textBox.setText(string);
   }
 
