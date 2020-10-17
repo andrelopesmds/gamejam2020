@@ -13,6 +13,7 @@ export class GameScene extends Phaser.Scene {
   private cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys;
   private player: Phaser.Physics.Arcade.Sprite;
   private platforms: Phaser.Physics.Arcade.StaticGroup;
+  private mapRenderBounds: { left: number; right: number };
 
   constructor() {
     super(sceneConfig);
@@ -26,10 +27,11 @@ export class GameScene extends Phaser.Scene {
     this.cursorKeys = this.input.keyboard.createCursorKeys();
 
     this.platforms = this.physics.add.staticGroup();
-
-    this.platforms.create(800, 800, 'man').setScale(5).refreshBody();
-
     this.physics.add.collider(this.player, this.platforms);
+    this.mapRenderBounds = { left: 400, right: 500 };
+
+    // initial platforms
+    this.platforms.create(800, 100, 'man').setScale(5).refreshBody();
   }
 
   private updateSpeed(): void {
@@ -54,7 +56,20 @@ export class GameScene extends Phaser.Scene {
   }
 
   private updateMap(): void {
-    const foobar = 1;
+    const px = this.player.getCenter().x;
+    const platformSize = 100;
+
+    if (px > this.mapRenderBounds.right) {
+      const newPlatformX = this.mapRenderBounds.right + platformSize / 2;
+      this.platforms.create(newPlatformX, 800, 'man').setScale(4).refreshBody();
+      this.mapRenderBounds.right += 3 * platformSize;
+    }
+
+    if (px < this.mapRenderBounds.left) {
+      const newPlatformX = this.mapRenderBounds.left - platformSize / 2;
+      this.platforms.create(newPlatformX, 800, 'man').setScale(5).refreshBody();
+      this.mapRenderBounds.left -= 3 * platformSize;
+    }
   }
 
   public update(): void {
