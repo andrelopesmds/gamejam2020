@@ -81,7 +81,7 @@ export class GameScene extends Phaser.Scene {
       console.log('Create plat, y=', y);
 
       const newPlatformX = this.mapRenderBounds.right + this.platformConfig.size / 2;
-      this.platforms.create(newPlatformX, y, 'man').setScale(4).refreshBody();
+      this.platforms.create(newPlatformX, y, 'platform');
     }
 
     this.mapRenderBounds.right += 3 * this.platformConfig.size;
@@ -95,7 +95,7 @@ export class GameScene extends Phaser.Scene {
       console.log('Create plat, y=', y);
 
       const newPlatformX = this.mapRenderBounds.left - this.platformConfig.size / 2;
-      this.platforms.create(newPlatformX, y, 'man').setScale(2).refreshBody();
+      this.platforms.create(newPlatformX, y, 'platform');
     }
 
     this.mapRenderBounds.left -= 3 * this.platformConfig.size;
