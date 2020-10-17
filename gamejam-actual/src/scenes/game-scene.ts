@@ -98,7 +98,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   private restartGame(seconds: number) : void {
-    setTimeout(() => { this.scene.restart(); }, seconds * 1000);
+    setTimeout(() => {
+      this.lavaToFloor();
+      this.scene.restart();
+    }, seconds * 1000);
   }
 
   private createTextBox(): void {
@@ -139,7 +142,6 @@ export class GameScene extends Phaser.Scene {
       }
 
       if (string === 'LAVA_ON') {
-        
         this.populateTextBox('Floor is dangerous! 😈');
         setTimeout(() => { 
           this.floorToLava();
