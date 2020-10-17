@@ -1,5 +1,4 @@
 import { getGameWidth, getGameHeight } from '../helpers';
-import { initWS } from '../websocket/websocket';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -16,11 +15,6 @@ export class BootScene extends Phaser.Scene {
   }
 
   public preload(): void {
-    //Initializes the connection and starts to listen the connection
-    initWS((event) => {
-      console.log(event.data);
-    });
-
     const halfWidth = getGameWidth(this) * 0.5;
     const halfHeight = getGameHeight(this) * 0.5;
 

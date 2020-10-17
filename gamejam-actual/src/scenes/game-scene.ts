@@ -1,5 +1,6 @@
 import { Input } from 'phaser';
 import { getGameWidth, getGameHeight } from '../helpers';
+import { initWS } from '../websocket/websocket';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -8,7 +9,6 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 };
 
 export class GameScene extends Phaser.Scene {
-  public speed = 600;
   public platformConfig: PlatformConfig;
 
   private cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -21,6 +21,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   public create(): void {
+    //Initializes the connection and starts to listen the connection
+    initWS((event) => {
+      console.log(event.data);
+    });
+
     // Add a player sprite that can be moved around. Place him in the middle of the screen.
     this.player = this.physics.add.sprite(getGameWidth(this) / 2, getGameHeight(this) / 2, 'dude');
 
