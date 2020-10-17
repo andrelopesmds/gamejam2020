@@ -139,7 +139,13 @@ export class GameScene extends Phaser.Scene {
       }
 
       if (string === 'LAVA_ON') {
-        this.floorToLava();
+        
+        this.populateTextBox('Floor is dangerous! 😈');
+        setTimeout(() => { 
+          this.floorToLava();
+          this.populateTextBox('');
+        }, 3 * 1000);
+        
         return;
       } else if (string === 'LAVA_OFF') {
         this.lavaToFloor();
