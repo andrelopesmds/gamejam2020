@@ -24,6 +24,7 @@ export class GameScene extends Phaser.Scene {
   private textBox: Phaser.GameObjects.Text;
   private scoreCounter: Phaser.GameObjects.Text;
   private bombs: Phaser.Physics.Arcade.Group;
+  private killbots: Phaser.Physics.Arcade.Group;
   private chunkSize = 2048;
   private playerVelocity = 150;
   private bullets: Bullets;
@@ -67,9 +68,19 @@ export class GameScene extends Phaser.Scene {
     this.createCounter();
 
     this.setupBombs();
+    this.setupKillbots();
 
     this.bullets = new Bullets(this.physics, this, 30);
     this.bullets.setHitCallback(this.player, this.playerHitsBomb);
+
+    // don't update on every frame
+    this.time.addEvent({
+      delay: 300,
+      loop: true,
+      callback: () => {
+        this.updateKillbots();
+      },
+    });
   }
 
   private setupBombs() {
@@ -86,6 +97,19 @@ export class GameScene extends Phaser.Scene {
     bomb.setBounce(1);
     bomb.setCollideWorldBounds(true);
     bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+  }
+
+  private setupKillbots() {
+    this.killbots = this.physics.add.group();
+    this.physics.add.collider(this.killbots, this.platforms);
+    this.physics.add.collider(this.killbots, this.floor);
+
+    this.createKillBot();
+  }
+
+  private createKillBot() {
+    const bot = this.killbots.create(this.player.x + 200, 0, 'killbot');
+    bot.setBounce(0.3);
   }
 
   private playerHitsBomb() {
@@ -256,6 +280,14 @@ export class GameScene extends Phaser.Scene {
     this.normalFloorCollider = this.physics.add.collider(this.player, this.floor);
     this.physics.world.removeCollider(this.lavaCollider);
     this.lavaCollider = null;
+  }
+
+  private updateKillbots() {
+    this.killbots.getChildren().forEach((bot: Phaser.Physics.Arcade.Sprite) => {
+      if (Math.abs(this.player.x - bot.x) < getGameWidth(this) / 4) {
+        this.bullets.spawnBullet(bot.x, bot.y, this.player.x < bot.x ? 'left' : 'right');
+      }
+    });
   }
 
   public update(): void {
