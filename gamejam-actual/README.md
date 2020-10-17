@@ -1,3 +1,28 @@
+# Implemented events
+
+## Bomb
+
+```
+Event_string: 'BOMB'
+Description: Throws a bomb! Player would explode (gameover) if it hits a bomb
+```
+
+## Change velocity
+```
+Event_string: 'HIGH_SPEED'
+Description: Speeds up the player
+```
+
+```
+Event_string: 'NORMAL_SPEED'
+Description: Default speed of the player
+```
+
+```
+Event_string: 'LOW_SPEED'
+Description: Slows the player down
+```
+
 # Event ideas
 
 ## Enemies
