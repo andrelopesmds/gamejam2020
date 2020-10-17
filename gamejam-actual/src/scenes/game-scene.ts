@@ -26,7 +26,7 @@ export class GameScene extends Phaser.Scene {
 
     //  Player physics properties. Give the little guy a slight bounce.
     this.player.setBounce(0.2);
-    this.player.setCollideWorldBounds(true);
+    // this.player.setCollideWorldBounds(true);
 
     //  Our player animations, turning, walking left and walking right.
     this.createDudeAnimations();
@@ -55,7 +55,15 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createInitialPlatforms(): void {
-    this.platforms.create(getGameWidth(this) / 2, getGameHeight(this) * 0.75, 'platform');
+    this.platforms.create(getGameWidth(this) * 0.75, getGameHeight(this) * 0.73, 'platform');
+    this.platforms.create(getGameWidth(this) * 0.5, getGameHeight(this) * 0.75, 'platform');
+    this.platforms.create(getGameWidth(this) * 0.25, getGameHeight(this) * 0.72, 'platform');
+
+    // floor
+    this.platforms
+      .create(getGameWidth(this) / 2, getGameHeight(this), 'platform')
+      .setScale(8)
+      .refreshBody();
   }
 
   private createDudeAnimations() {
@@ -93,19 +101,19 @@ export class GameScene extends Phaser.Scene {
       this.player.anims.play('turn');
     }
 
-    if (this.cursorKeys.up.isDown) {
-      this.player.setVelocityY(-330) && this.player.body.touching.down;
+    if (this.cursorKeys.up.isDown && this.player.body.touching.down) {
+      this.player.setVelocityY(-330);
     }
   }
 
   private updateMap(): void {
     const px = this.player.getCenter().x;
 
-    if (px > this.mapRenderBounds.right) {
+    if (px > this.mapRenderBounds.right - getGameWidth(this) / 2) {
       this.createPlatformsRight();
     }
 
-    if (px < this.mapRenderBounds.left) {
+    if (px < this.mapRenderBounds.left + getGameWidth(this) / 2) {
       this.createPlatformsLeft();
     }
   }
