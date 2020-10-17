@@ -71,7 +71,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   private playerHitsBomb() {
-    // todo
+    this.physics.pause();
+    this.player.setTint(0xff0000);
+    this.player.anims.play('turn');
+    this.populateTextBox('GAME OVER!')
   }
 
   private createTextBox(): void {
