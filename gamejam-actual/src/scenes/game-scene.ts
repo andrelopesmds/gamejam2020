@@ -8,7 +8,14 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 };
 
 export class GameScene extends Phaser.Scene {
-  public speed = 200;
+  public speed = 600;
+  public platformConfig: PlatformConfig = {
+    size: 100,
+    minY: 100,
+    maxY: 800,
+    minAmount: 1,
+    maxAmount: 3,
+  };
 
   private cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys;
   private player: Phaser.Physics.Arcade.Sprite;
@@ -30,10 +37,7 @@ export class GameScene extends Phaser.Scene {
 
     this.platforms = this.physics.add.staticGroup();
     this.physics.add.collider(this.player, this.platforms);
-    this.mapRenderBounds = { left: 400, right: 500 };
-
-    // initial platforms
-    this.platforms.create(800, 100, 'man').setScale(5).refreshBody();
+    this.mapRenderBounds = { left: 600, right: 700 };
   }
 
   private updateSpeed(): void {
@@ -59,19 +63,42 @@ export class GameScene extends Phaser.Scene {
 
   private updateMap(): void {
     const px = this.player.getCenter().x;
-    const platformSize = 100;
 
     if (px > this.mapRenderBounds.right) {
-      const newPlatformX = this.mapRenderBounds.right + platformSize / 2;
-      this.platforms.create(newPlatformX, 800, 'man').setScale(4).refreshBody();
-      this.mapRenderBounds.right += 3 * platformSize;
+      this.createPlatformsRight();
     }
 
     if (px < this.mapRenderBounds.left) {
-      const newPlatformX = this.mapRenderBounds.left - platformSize / 2;
-      this.platforms.create(newPlatformX, 800, 'man').setScale(5).refreshBody();
-      this.mapRenderBounds.left -= 3 * platformSize;
+      this.createPlatformsLeft();
     }
+  }
+
+  private createPlatformsRight(): void {
+    const amount = randInt(this.platformConfig.minAmount, this.platformConfig.maxAmount);
+    console.log('amount of plats', amount);
+    for (let i = 0; i < amount; i++) {
+      const y = randInt(this.platformConfig.minY, this.platformConfig.maxY);
+      console.log('Create plat, y=', y);
+
+      const newPlatformX = this.mapRenderBounds.right + this.platformConfig.size / 2;
+      this.platforms.create(newPlatformX, y, 'man').setScale(4).refreshBody();
+    }
+
+    this.mapRenderBounds.right += 3 * this.platformConfig.size;
+  }
+
+  private createPlatformsLeft(): void {
+    const amount = randInt(this.platformConfig.minAmount, this.platformConfig.maxAmount);
+    console.log('amount of plats', amount);
+    for (let i = 0; i < amount; i++) {
+      const y = randInt(this.platformConfig.minY, this.platformConfig.maxY);
+      console.log('Create plat, y=', y);
+
+      const newPlatformX = this.mapRenderBounds.left - this.platformConfig.size / 2;
+      this.platforms.create(newPlatformX, y, 'man').setScale(2).refreshBody();
+    }
+
+    this.mapRenderBounds.left -= 3 * this.platformConfig.size;
   }
 
   public update(): void {
@@ -79,4 +106,22 @@ export class GameScene extends Phaser.Scene {
     this.updateSpeed();
     this.updateMap();
   }
+}
+
+// functions and types
+
+const randInt = (min: number, max: number): number => {
+  if (min === max) {
+    return min;
+  }
+  const x = Math.random() * (max - min + 1);
+  return Math.floor(x) + min;
+};
+
+interface PlatformConfig {
+  size: number;
+  minY: number;
+  maxY: number;
+  minAmount: number;
+  maxAmount: number;
 }
