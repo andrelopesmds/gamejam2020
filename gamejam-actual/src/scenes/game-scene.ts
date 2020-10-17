@@ -21,6 +21,7 @@ export class GameScene extends Phaser.Scene {
   private floor: Phaser.Physics.Arcade.StaticGroup;
   private mapRenderBounds: { left: number; right: number };
   private textBox: Phaser.GameObjects.Text;
+  private scoreCounter: Phaser.GameObjects.Text;
   private bombs: Phaser.Physics.Arcade.Group;
   private chunkSize = 2048;
   private playerVelocity = 150;
@@ -62,6 +63,7 @@ export class GameScene extends Phaser.Scene {
     this.generateChunk(0);
 
     this.createTextBox();
+    this.createCounter();
 
     this.setupBombs();
   }
@@ -98,6 +100,12 @@ export class GameScene extends Phaser.Scene {
     const py = 64;
     this.textBox = this.add.text(px, py, '', { fill: '#FFFFFF' }).setFontSize(24);
     this.textBox.setScrollFactor(0);
+  }
+
+  private createCounter(): void {
+    const x = getGameWidth(this) - 300;
+    const y = 64;
+    this.scoreCounter = this.add.text(x, y, '0', { fill: '#FFFFFF' }).setFontSize(24).setScrollFactor(0);
   }
 
   private populateTextBox(string: string) {
@@ -243,6 +251,8 @@ export class GameScene extends Phaser.Scene {
       this.lavaToFloor();
     }
 
+    const distanceInPixels = this.player.x - getGameWidth(this) / 2;
+    this.scoreCounter.setText(`score: ${Math.round(distanceInPixels / 10)}m`);
     this.updateSpeed();
     this.updateMap();
   }
