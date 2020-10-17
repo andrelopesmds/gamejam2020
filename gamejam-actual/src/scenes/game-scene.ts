@@ -1,4 +1,5 @@
 import { Input } from 'phaser';
+import createAnimations from './animations';
 import { getGameWidth, getGameHeight } from '../helpers';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
@@ -11,6 +12,7 @@ export class GameScene extends Phaser.Scene {
   public speed = 600;
   public platformConfig: PlatformConfig;
 
+  private playerSkin = 'dude';
   private cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys;
   private player: Phaser.Physics.Arcade.Sprite;
   private platforms: Phaser.Physics.Arcade.StaticGroup;
@@ -22,14 +24,16 @@ export class GameScene extends Phaser.Scene {
 
   public create(): void {
     // Add a player sprite that can be moved around. Place him in the middle of the screen.
-    this.player = this.physics.add.sprite(getGameWidth(this) / 2, getGameHeight(this) / 2, 'dude');
+    this.player = this.physics.add.sprite(getGameWidth(this) / 2, getGameHeight(this) / 2, 'andre');
 
     //  Player physics properties. Give the little guy a slight bounce.
     this.player.setBounce(0.2);
     // this.player.setCollideWorldBounds(true);
 
     //  Our player animations, turning, walking left and walking right.
-    this.createDudeAnimations();
+    createAnimations(this.anims, 'ilpo');
+    createAnimations(this.anims, 'rasse');
+    createAnimations(this.anims, 'andre');
 
     this.cameras.main.startFollow(this.player);
 
@@ -66,39 +70,16 @@ export class GameScene extends Phaser.Scene {
       .refreshBody();
   }
 
-  private createDudeAnimations() {
-    //  Our player animations, turning, walking left and walking right.
-    this.anims.create({
-      key: 'left',
-      frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: 'turn',
-      frames: [{ key: 'dude', frame: 4 }],
-      frameRate: 20,
-    });
-
-    this.anims.create({
-      key: 'right',
-      frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-      frameRate: 10,
-      repeat: -1,
-    });
-  }
-
   private updateSpeed(): void {
     if (this.cursorKeys.left.isDown) {
       this.player.setVelocityX(-160);
-      this.player.anims.play('left', true);
+      this.player.anims.play(`left-${this.playerSkin}`, true);
     } else if (this.cursorKeys.right.isDown) {
       this.player.setVelocityX(160);
-      this.player.anims.play('right', true);
+      this.player.anims.play(`right-${this.playerSkin}`, true);
     } else {
       this.player.setVelocityX(0);
-      this.player.anims.play('turn');
+      this.player.anims.play(`turn-${this.playerSkin}`);
     }
 
     if (this.cursorKeys.up.isDown && this.player.body.touching.down) {
@@ -148,6 +129,14 @@ export class GameScene extends Phaser.Scene {
 
   public update(): void {
     // Every frame, we create a new velocity for the sprite based on what keys the player is holding down.
+    if (this.player.x > 1000) {
+      this.playerSkin = 'ilpo';
+    } else if (this.player.x < 0) {
+      this.playerSkin = 'rasse';
+    } else {
+      this.playerSkin = 'andre';
+    }
+
     this.updateSpeed();
     this.updateMap();
   }
