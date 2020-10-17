@@ -71,6 +71,8 @@ export class BootScene extends Phaser.Scene {
    */
   private loadAssets() {
     // Load sample assets
+    //  Firefox doesn't support mp3 files, so use ogg -> this.load.audio('gameover', ['assets/gameover.mp3', 'assets/gameover.ogg']);
+    this.load.audio('gameover', 'assets/gameover.mp3');
 
     // Source: Open Game Art
     this.load.image('platform', 'assets/sprites/ground-dirt.png');
