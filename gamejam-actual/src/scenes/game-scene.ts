@@ -174,6 +174,11 @@ export class GameScene extends Phaser.Scene {
         return;
       }
 
+      if (string === 'KILLBOT') {
+        this.createKillBot();
+        return;
+      }
+
       // we are showing non valid events as messages on the screen
       this.populateTextBox(string);
     });
