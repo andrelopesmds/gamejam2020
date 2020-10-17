@@ -2,6 +2,7 @@ import { Input } from 'phaser';
 import createAnimations from './animations';
 import { getGameWidth, getGameHeight } from '../helpers';
 import { initWS } from '../websocket/websocket';
+import Bullets from './bullet';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -23,9 +24,10 @@ export class GameScene extends Phaser.Scene {
   private textBox: Phaser.GameObjects.Text;
   private scoreCounter: Phaser.GameObjects.Text;
   private bombs: Phaser.Physics.Arcade.Group;
+  private killbots: Phaser.Physics.Arcade.Group;
   private chunkSize = 2048;
   private playerVelocity = 150;
-
+  private bullets: Bullets;
 
   constructor() {
     super(sceneConfig);
@@ -48,7 +50,7 @@ export class GameScene extends Phaser.Scene {
     createAnimations(this.anims, 'andre');
 
     this.cameras.main.startFollow(this.player);
-    this.cameras.main.setBackgroundColor('#4dc9ff');
+    this.cameras.main.setBackgroundColor('#111111');
 
     // This is a nice helper Phaser provides to create listeners for some of the most common keys.
     this.cursorKeys = this.input.keyboard.createCursorKeys();
@@ -66,6 +68,19 @@ export class GameScene extends Phaser.Scene {
     this.createCounter();
 
     this.setupBombs();
+    this.setupKillbots();
+
+    this.bullets = new Bullets(this.physics, this, 30);
+    this.bullets.setHitCallback(this.player, this.playerHitsBomb);
+
+    // don't update on every frame
+    this.time.addEvent({
+      delay: 300,
+      loop: true,
+      callback: () => {
+        this.updateKillbots();
+      },
+    });
   }
 
   private setupBombs() {
@@ -88,6 +103,19 @@ export class GameScene extends Phaser.Scene {
       this.bombs.remove(bomb);
       bomb.destroy();
      }, 10 * 1000);
+  }
+
+  private setupKillbots() {
+    this.killbots = this.physics.add.group();
+    this.physics.add.collider(this.killbots, this.platforms);
+    this.physics.add.collider(this.killbots, this.floor);
+
+    this.createKillBot();
+  }
+
+  private createKillBot() {
+    const bot = this.killbots.create(this.player.x + 200, 0, 'killbot');
+    bot.setBounce(0.3);
   }
 
   private playerHitsBomb() {
@@ -157,6 +185,11 @@ export class GameScene extends Phaser.Scene {
      
       } else if (string === EventType.LAVA_OFF) {
         this.lavaToFloor();
+        return;
+      }
+
+      if (string === 'KILLBOT') {
+        this.createKillBot();
         return;
       }
 
@@ -268,6 +301,14 @@ export class GameScene extends Phaser.Scene {
     this.lavaCollider = null;
   }
 
+  private updateKillbots() {
+    this.killbots.getChildren().forEach((bot: Phaser.Physics.Arcade.Sprite) => {
+      if (Math.abs(this.player.x - bot.x) < getGameWidth(this) / 4) {
+        this.bullets.spawnBullet(bot.x, bot.y, this.player.x < bot.x ? 'left' : 'right');
+      }
+    });
+  }
+
   public update(): void {
     if (this.player.x > 1000) {
       this.playerSkin = 'ilpo';
@@ -277,10 +318,15 @@ export class GameScene extends Phaser.Scene {
       this.playerSkin = 'andre';
     }
 
+    if (this.cursorKeys.space.isDown) {
+      this.bullets.spawnBullet(0, this.player.y, 'right');
+    }
+
     const distanceInPixels = this.player.x - getGameWidth(this) / 2;
     this.scoreCounter.setText(`score: ${Math.round(distanceInPixels / 10)}m`);
     this.updateSpeed();
     this.updateMap();
+    this.bullets.update();
   }
 }
 
