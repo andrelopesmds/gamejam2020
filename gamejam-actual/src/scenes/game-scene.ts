@@ -15,6 +15,8 @@ export class GameScene extends Phaser.Scene {
   private player: Phaser.Physics.Arcade.Sprite;
   private platforms: Phaser.Physics.Arcade.StaticGroup;
   private mapRenderBounds: { left: number; right: number };
+  private textBox: Phaser.GameObjects.Text;
+  private bombs: Phaser.Physics.Arcade.Group;
 
   constructor() {
     super(sceneConfig);
@@ -22,9 +24,7 @@ export class GameScene extends Phaser.Scene {
 
   public create(): void {
     //Initializes the connection and starts to listen the connection
-    initWS((event) => {
-      console.log(event.data);
-    });
+    this.initConnectionAndHandleEvents();
 
     // Add a player sprite that can be moved around. Place him in the middle of the screen.
     this.player = this.physics.add.sprite(getGameWidth(this) / 2, getGameHeight(this) / 2, 'dude');
@@ -47,6 +47,60 @@ export class GameScene extends Phaser.Scene {
 
     this.initPlatformConfig();
     this.createInitialPlatforms();
+
+    this.createTextBox();
+    this.populateTextBox('');
+
+    this.setupBombs();
+  }
+
+  private setupBombs() {
+    this.bombs = this.physics.add.group();
+    this.physics.add.collider(this.bombs, this.platforms);
+    this.physics.add.collider(this.player, this.bombs, this.playerHitsBomb, null, this);
+
+    this.createBomb();
+  }
+
+  private createBomb() {
+    var x = (this.player.getCenter().x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+    var bomb = this.bombs.create(x, 16, 'bomb');
+    bomb.setBounce(1);
+    bomb.setCollideWorldBounds(true);
+    bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+  }
+
+  private playerHitsBomb() {
+    // todo
+  }
+
+  private createTextBox(): void {
+    const px = this.player.getCenter().x;
+    const py = this.player.getCenter().y;
+    this.textBox = this.add.text(px, py, '', { fill: '#FFFFFF' }).setFontSize(24);
+  }
+
+  private populateTextBox(string: string) {
+    const px = this.player.getCenter().x;
+    const py = this.player.getCenter().y;
+
+    this.textBox.setX(px);
+    this.textBox.setY(py - 500);
+    this.textBox.setText(string);
+  }
+
+  private initConnectionAndHandleEvents() {
+    initWS((event) => {
+      const string = event.data;
+
+      if (string === 'BOMB') {
+        this.createBomb();
+        return;
+      }
+
+      // we are showing non valid events as messages on the screen
+      this.populateTextBox(string);
+    });
   }
 
   private initPlatformConfig(): void {
