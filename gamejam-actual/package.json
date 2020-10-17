@@ -12,6 +12,7 @@
     "dev": "webpack-dev-server"
   },
   "dependencies": {
+    "chance": "^1.1.7",
     "phaser": "^3.23.0",
     "ws": "^7.3.1"
   },
