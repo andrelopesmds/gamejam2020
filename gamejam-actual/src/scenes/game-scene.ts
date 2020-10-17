@@ -21,7 +21,32 @@ export class GameScene extends Phaser.Scene {
 
   public create(): void {
     // Add a player sprite that can be moved around. Place him in the middle of the screen.
-    this.player = this.physics.add.sprite(getGameWidth(this) / 2, getGameHeight(this) / 2, 'man');
+    this.player = this.physics.add.sprite(getGameWidth(this) / 2, getGameHeight(this) / 2, 'dude');
+
+    //  Player physics properties. Give the little guy a slight bounce.
+    this.player.setBounce(0.2);
+    this.player.setCollideWorldBounds(true);
+
+    //  Our player animations, turning, walking left and walking right.
+    this.anims.create({
+      key: 'left',
+      frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+      frameRate: 10,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: 'turn',
+      frames: [{ key: 'dude', frame: 4 }],
+      frameRate: 20
+    });
+
+    this.anims.create({
+      key: 'right',
+      frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+      frameRate: 10,
+      repeat: -1
+    });
 
     this.cameras.main.startFollow(this.player);
 
@@ -34,27 +59,26 @@ export class GameScene extends Phaser.Scene {
 
     // initial platforms
     this.platforms.create(800, 100, 'man').setScale(5).refreshBody();
+    // initial platforms
+    this.platforms.create(0, getGameHeight(this) + 3000, 'man').setScale(200).refreshBody();
   }
 
   private updateSpeed(): void {
-    const velocity = new Phaser.Math.Vector2(0, 0);
-
     if (this.cursorKeys.left.isDown) {
-      velocity.x -= 1;
-    }
-    if (this.cursorKeys.right.isDown) {
-      velocity.x += 1;
-    }
-    if (this.cursorKeys.up.isDown) {
-      velocity.y -= 1;
-    }
-    if (this.cursorKeys.down.isDown) {
-      velocity.y += 1;
+      this.player.setVelocityX(-160);
+      this.player.anims.play('left', true);
+    } else if (this.cursorKeys.right.isDown) {
+      this.player.setVelocityX(160);
+      this.player.anims.play('right', true);
+    } else {
+      this.player.setVelocityX(0);
+      this.player.anims.play('turn');
     }
 
-    // We normalize the velocity so that the player is always moving at the same speed, regardless of direction.
-    const normalizedVelocity = velocity.normalize();
-    this.player.setVelocity(normalizedVelocity.x * this.speed, normalizedVelocity.y * this.speed);
+    if (this.cursorKeys.up.isDown) // add this once we have a platform ->  && this.player.body.touching.down 
+    {
+      this.player.setVelocityY(-330);
+    }
   }
 
   private updateMap(): void {
