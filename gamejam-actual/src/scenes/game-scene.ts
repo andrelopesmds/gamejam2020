@@ -2,6 +2,7 @@ import { Input } from 'phaser';
 import createAnimations from './animations';
 import { getGameWidth, getGameHeight } from '../helpers';
 import { initWS } from '../websocket/websocket';
+import Bullets from './bullet';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -25,7 +26,7 @@ export class GameScene extends Phaser.Scene {
   private bombs: Phaser.Physics.Arcade.Group;
   private chunkSize = 2048;
   private playerVelocity = 150;
-
+  private bullets: Bullets;
 
   constructor() {
     super(sceneConfig);
@@ -66,6 +67,8 @@ export class GameScene extends Phaser.Scene {
     this.createCounter();
 
     this.setupBombs();
+
+    this.bullets = new Bullets(this.physics, this, 30);
   }
 
   private setupBombs() {
@@ -267,6 +270,7 @@ export class GameScene extends Phaser.Scene {
     this.scoreCounter.setText(`score: ${Math.round(distanceInPixels / 10)}m`);
     this.updateSpeed();
     this.updateMap();
+    this.bullets.update();
   }
 }
 
