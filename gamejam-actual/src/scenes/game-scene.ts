@@ -9,13 +9,7 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 export class GameScene extends Phaser.Scene {
   public speed = 600;
-  public platformConfig: PlatformConfig = {
-    size: 100,
-    minY: 100,
-    maxY: 800,
-    minAmount: 1,
-    maxAmount: 3,
-  };
+  public platformConfig: PlatformConfig;
 
   private cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys;
   private player: Phaser.Physics.Arcade.Sprite;
@@ -37,7 +31,24 @@ export class GameScene extends Phaser.Scene {
 
     this.platforms = this.physics.add.staticGroup();
     this.physics.add.collider(this.player, this.platforms);
-    this.mapRenderBounds = { left: 600, right: 700 };
+    this.mapRenderBounds = { left: 0, right: getGameWidth(this) };
+
+    this.initPlatformConfig();
+    this.createInitialPlatforms();
+  }
+
+  private initPlatformConfig(): void {
+    this.platformConfig = {
+      size: 100,
+      minY: getGameHeight(this) / 2,
+      maxY: getGameHeight(this), // this is actually the bottom
+      minAmount: 1,
+      maxAmount: 3,
+    };
+  }
+
+  private createInitialPlatforms(): void {
+    this.platforms.create(getGameWidth(this) / 2, getGameHeight(this) * 0.75, 'platform');
   }
 
   private updateSpeed(): void {
