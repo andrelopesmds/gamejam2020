@@ -19,6 +19,7 @@ export class GameScene extends Phaser.Scene {
   private mapRenderBounds: { left: number; right: number };
   private textBox: Phaser.GameObjects.Text;
   private bombs: Phaser.Physics.Arcade.Group;
+  private playerVelocity = 150;
 
   constructor() {
     super(sceneConfig);
@@ -109,6 +110,17 @@ export class GameScene extends Phaser.Scene {
         return;
       }
 
+      if (string === 'HIGH_SPEED') {
+        this.playerVelocity = 250;
+        return;
+      } else if (string === 'NORMAL_SPEED') {
+        this.playerVelocity = 150;
+        return;
+      } else if (string === 'LOW_SPEED') {
+        this.playerVelocity = 50;
+        return;
+      }
+
       // we are showing non valid events as messages on the screen
       this.populateTextBox(string);
     });
@@ -138,11 +150,13 @@ export class GameScene extends Phaser.Scene {
 
   private updateSpeed(): void {
     if (this.cursorKeys.left.isDown) {
-      this.player.setVelocityX(-160);
+      this.player.setVelocityX(-1 * this.playerVelocity);
       this.player.anims.play(`left-${this.playerSkin}`, true);
+
     } else if (this.cursorKeys.right.isDown) {
-      this.player.setVelocityX(160);
+      this.player.setVelocityX(this.playerVelocity);
       this.player.anims.play(`right-${this.playerSkin}`, true);
+      
     } else {
       this.player.setVelocityX(0);
       this.player.anims.play(`turn-${this.playerSkin}`);
