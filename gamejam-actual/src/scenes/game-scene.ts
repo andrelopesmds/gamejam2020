@@ -71,16 +71,17 @@ export class GameScene extends Phaser.Scene {
   private setupBombs() {
     this.bombs = this.physics.add.group();
     this.physics.add.collider(this.bombs, this.platforms);
+    this.physics.add.collider(this.bombs, this.floor);
     this.physics.add.collider(this.player, this.bombs, this.playerHitsBomb, null, this);
 
     this.createBomb();
   }
 
   private createBomb() {
-    var x = (this.player.getCenter().x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-    var bomb = this.bombs.create(x, 16, 'bomb');
+    var px = this.player.getCenter().x
+    var bombX = Phaser.Math.Between(px, px + 800)
+    var bomb = this.bombs.create(bombX, 16, 'bomb');
     bomb.setBounce(1);
-    bomb.setCollideWorldBounds(true);
     bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
   }
 
@@ -295,3 +296,4 @@ interface PlatformConfig {
   minAmount: number;
   maxAmount: number;
 }
+
