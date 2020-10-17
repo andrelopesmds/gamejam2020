@@ -87,7 +87,7 @@ export class GameScene extends Phaser.Scene {
     this.physics.pause();
     this.player.setTint(0xff0000);
     this.player.anims.play('turn');
-    
+
     this.populateTextBox('GAME OVER!');
 
     this.sound.add('gameover');
@@ -126,6 +126,14 @@ export class GameScene extends Phaser.Scene {
         return;
       } else if (string === 'LOW_SPEED') {
         this.playerVelocity = 50;
+        return;
+      }
+
+      if (string === 'LAVA_ON') {
+        this.floorToLava();
+        return;
+      } else if (string === 'LAVA_OFF') {
+        this.lavaToFloor();
         return;
       }
 
@@ -171,7 +179,7 @@ export class GameScene extends Phaser.Scene {
     } else if (this.cursorKeys.right.isDown) {
       this.player.setVelocityX(this.playerVelocity);
       this.player.anims.play(`right-${this.playerSkin}`, true);
-      
+
     } else {
       this.player.setVelocityX(0);
       this.player.anims.play(`turn-${this.playerSkin}`);
@@ -241,11 +249,9 @@ export class GameScene extends Phaser.Scene {
     if (this.player.x > 1000) {
       this.playerSkin = 'ilpo';
     } else if (this.player.x < 0) {
-      this.floorToLava();
       this.playerSkin = 'rasse';
     } else {
       this.playerSkin = 'andre';
-      this.lavaToFloor();
     }
 
     this.updateSpeed();

@@ -23,6 +23,18 @@ Event_string: 'LOW_SPEED'
 Description: Slows the player down
 ```
 
+## Foor is lava
+```
+Event_string: 'LAVA_ON'
+Description: Floor becames lava
+```
+
+```
+Event_string: 'LAVA_OFF'
+Description: Floor comes back to normal
+```
+
+
 # Event ideas
 
 ## Enemies
