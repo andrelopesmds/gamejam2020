@@ -92,7 +92,13 @@ export class GameScene extends Phaser.Scene {
     this.populateTextBox('GAME OVER!');
 
     this.sound.add('gameover');
-    this.sound.play('gameover')
+    this.sound.play('gameover');
+
+    this.restartGame(5);
+  }
+
+  private restartGame(seconds: number) : void {
+    setTimeout(() => { this.scene.restart(); }, seconds * 1000);
   }
 
   private createTextBox(): void {
