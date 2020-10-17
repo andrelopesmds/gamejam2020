@@ -16,7 +16,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   public preload(): void {
-    const initWS = () => {
+    /* const initWS = () => {
       const ws = new WebSocket('ws://31.220.7.239:8080/web-socket', {
         perMessageDeflate: false,
       });
@@ -31,7 +31,7 @@ export class BootScene extends Phaser.Scene {
         console.log(data);
       });
     };
-    initWS();
+    initWS();*/
     const halfWidth = getGameWidth(this) * 0.5;
     const halfHeight = getGameHeight(this) * 0.5;
 

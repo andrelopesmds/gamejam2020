@@ -1,4 +1,4 @@
-import WebSocket = require('../../node_modules/@types/ws');
+/*import WebSocket = require('../../node_modules/@types/ws');
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const initWS = () => {
@@ -17,4 +17,4 @@ const initWS = () => {
   });
 };
 
-export default initWS;
+export default initWS;*/
