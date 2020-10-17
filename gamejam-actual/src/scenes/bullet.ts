@@ -15,9 +15,14 @@ export default class Bullets {
     this.velocity = velocity;
   }
 
+  public setHitCallback(player: Physics.Arcade.Sprite, cb: any): void {
+    this.physics.add.collider(player, this.leftBullets, cb, null, this.scene);
+    this.physics.add.collider(player, this.rightBullets, cb, null, this.scene);
+  }
+
   public spawnBullet(x: number, y: number, direction: 'left' | 'right'): void {
     const bg = direction === 'left' ? this.leftBullets : this.rightBullets;
-    const bullet = bg.create(x, y, 'bomb') as Physics.Arcade.Sprite;
+    const bullet = bg.create(x, y, 'bullet') as Physics.Arcade.Sprite;
     // remove bullets after a time
     this.scene.time.addEvent({
       delay: 2000,

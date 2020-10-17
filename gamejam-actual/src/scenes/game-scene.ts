@@ -49,7 +49,7 @@ export class GameScene extends Phaser.Scene {
     createAnimations(this.anims, 'andre');
 
     this.cameras.main.startFollow(this.player);
-    this.cameras.main.setBackgroundColor('#4dc9ff');
+    this.cameras.main.setBackgroundColor('#111111');
 
     // This is a nice helper Phaser provides to create listeners for some of the most common keys.
     this.cursorKeys = this.input.keyboard.createCursorKeys();
@@ -69,6 +69,7 @@ export class GameScene extends Phaser.Scene {
     this.setupBombs();
 
     this.bullets = new Bullets(this.physics, this, 30);
+    this.bullets.setHitCallback(this.player, this.playerHitsBomb);
   }
 
   private setupBombs() {
@@ -264,6 +265,10 @@ export class GameScene extends Phaser.Scene {
       this.playerSkin = 'rasse';
     } else {
       this.playerSkin = 'andre';
+    }
+
+    if (this.cursorKeys.space.isDown) {
+      this.bullets.spawnBullet(0, this.player.y, 'right');
     }
 
     const distanceInPixels = this.player.x - getGameWidth(this) / 2;
