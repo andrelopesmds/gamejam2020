@@ -1,6 +1,6 @@
 import { getGameWidth, getGameHeight } from '../helpers';
+import { initWS } from '../websocket/websocket';
 
-import WebSocket = require('../../node_modules/@types/ws');
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
   visible: false,
@@ -16,22 +16,11 @@ export class BootScene extends Phaser.Scene {
   }
 
   public preload(): void {
-    /* const initWS = () => {
-      const ws = new WebSocket('ws://31.220.7.239:8080/web-socket', {
-        perMessageDeflate: false,
-      });
+    //Initializes the connection and starts to listen the connection
+    initWS((event) => {
+      console.log(event.data);
+    });
 
-      console.log('dwadwa');
-      ws.on('open', function open() {
-        console.log('HALOOO');
-        ws.send('client testi');
-      });
-
-      ws.on('message', function incoming(data) {
-        console.log(data);
-      });
-    };
-    initWS();*/
     const halfWidth = getGameWidth(this) * 0.5;
     const halfHeight = getGameHeight(this) * 0.5;
 
