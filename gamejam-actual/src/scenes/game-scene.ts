@@ -12,10 +12,13 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 export class GameScene extends Phaser.Scene {
   public platformConfig: PlatformConfig;
 
+  private lavaCollider = null;
+  private normalFloorCollider = null;
   private playerSkin = 'andre';
   private cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys;
   private player: Phaser.Physics.Arcade.Sprite;
   private platforms: Phaser.Physics.Arcade.StaticGroup;
+  private floor: Phaser.Physics.Arcade.StaticGroup;
   private mapRenderBounds: { left: number; right: number };
   private textBox: Phaser.GameObjects.Text;
   private bombs: Phaser.Physics.Arcade.Group;
@@ -48,7 +51,9 @@ export class GameScene extends Phaser.Scene {
     this.cursorKeys = this.input.keyboard.createCursorKeys();
 
     this.platforms = this.physics.add.staticGroup();
+    this.floor = this.physics.add.staticGroup();
     this.physics.add.collider(this.player, this.platforms);
+    this.normalFloorCollider = this.physics.add.collider(this.player, this.floor);
     this.mapRenderBounds = { left: 0, right: 2048 };
 
     this.initPlatformConfig();
@@ -133,8 +138,8 @@ export class GameScene extends Phaser.Scene {
       }
     }
     // floor
-    this.platforms
-      .create(0, 0, 'platform')
+    this.floor
+      .create(0, 0, this.lavaCollider ? 'lava' : 'platform')
       .setOrigin(0.5, 1)
       .setDisplaySize(2048, 32)
       .setPosition(position + 1024, getGameHeight(this))
@@ -180,13 +185,48 @@ export class GameScene extends Phaser.Scene {
     this.mapRenderBounds.left -= 2048;
   }
 
+  private floorToLava(): void {
+    if (this.lavaCollider) {
+      return;
+    }
+    console.log('Changing floor to lava!');
+
+    // lava is deadly!
+    this.lavaCollider = this.physics.add.collider(this.player, this.floor, this.playerHitsBomb, null, this);
+    this.physics.world.removeCollider(this.normalFloorCollider);
+    // change sprites
+    const children = this.floor.getChildren() as Phaser.GameObjects.Sprite[];
+    children.forEach((spr) => {
+      spr.setTexture('lava');
+    });
+  }
+
+  private lavaToFloor(): void {
+    if (!this.lavaCollider) {
+      return;
+    }
+    console.log('Changing floor back to dirt!');
+
+    // change sprites
+    const children = this.floor.getChildren() as Phaser.GameObjects.Sprite[];
+    children.forEach((spr) => {
+      spr.setTexture('platform');
+    });
+    // remove lavacollider
+    this.normalFloorCollider = this.physics.add.collider(this.player, this.floor);
+    this.physics.world.removeCollider(this.lavaCollider);
+    this.lavaCollider = null;
+  }
+
   public update(): void {
     if (this.player.x > 1000) {
       this.playerSkin = 'ilpo';
     } else if (this.player.x < 0) {
+      this.floorToLava();
       this.playerSkin = 'rasse';
     } else {
       this.playerSkin = 'andre';
+      this.lavaToFloor();
     }
 
     this.updateSpeed();
