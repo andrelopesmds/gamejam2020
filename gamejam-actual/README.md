@@ -1,3 +1,47 @@
+# Event ideas
+
+## Enemies
+
+- Static (bomb)
+- Following enemy (melee)
+- Shooting enemy
+- Non-lethal enemy (pushes player back for example)
+
+## Environment
+
+- Slippery platforms
+- Breaking platforms
+- Fire / poison
+- Area that slows you down
+- Area that pushes you in some direction
+
+## Physic & Other
+
+- Switch direction of gravity
+- Confuse controls (e.g. left key goes right)
+- Teleport back some distance
+- low/high gravity
+- slow down/speed up time
+
+## Helpful stuff
+
+- Friend to take bullets / destroy dangerous stuff
+- extra life
+- higher jump
+- flight
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Phaser 3 + TypeScript Starter Kit
 
 This repository contains all the code necessary to start making a game in Phaser 3 using TypeScript.

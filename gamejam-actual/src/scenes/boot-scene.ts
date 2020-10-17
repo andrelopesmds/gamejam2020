@@ -76,5 +76,8 @@ export class BootScene extends Phaser.Scene {
     this.load.image('platform', 'assets/sprites/ground-dirt.png');
     this.load.image('bomb', 'assets/sprites/bomb.png');
     this.load.spritesheet('dude', 'assets/sprites/dude.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.spritesheet('ilpo', 'assets/sprites/ilpo.png', { frameWidth: 32, frameHeight: 36 });
+    this.load.spritesheet('rasse', 'assets/sprites/rasse.png', { frameWidth: 32, frameHeight: 36 });
+    this.load.spritesheet('andre', 'assets/sprites/andre.png', { frameWidth: 32, frameHeight: 36 });
   }
 }
