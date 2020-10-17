@@ -15,6 +15,7 @@ export class GameScene extends Phaser.Scene {
   private player: Phaser.Physics.Arcade.Sprite;
   private platforms: Phaser.Physics.Arcade.StaticGroup;
   private mapRenderBounds: { left: number; right: number };
+  private textBox: Phaser.GameObjects.Text;
 
   constructor() {
     super(sceneConfig);
@@ -22,9 +23,7 @@ export class GameScene extends Phaser.Scene {
 
   public create(): void {
     //Initializes the connection and starts to listen the connection
-    initWS((event) => {
-      console.log(event.data);
-    });
+    this.initConnectionAndHandleEvents();
 
     // Add a player sprite that can be moved around. Place him in the middle of the screen.
     this.player = this.physics.add.sprite(getGameWidth(this) / 2, getGameHeight(this) / 2, 'dude');
@@ -47,6 +46,40 @@ export class GameScene extends Phaser.Scene {
 
     this.initPlatformConfig();
     this.createInitialPlatforms();
+
+    this.createTextBox();
+    this.populateTextBox('');
+  }
+
+  private createTextBox(): void {
+    const px = this.player.getCenter().x;
+    const py = this.player.getCenter().y;
+    this.textBox = this.add.text(px, py, '', { fill: '#FFFFFF' }).setFontSize(24);
+  }
+
+  private populateTextBox(string: string) {
+    const px = this.player.getCenter().x;
+    const py = this.player.getCenter().y;
+
+    this.textBox.setX(px);
+    this.textBox.setY(py - 500);
+    this.textBox.setText(string);
+  }
+
+  private initConnectionAndHandleEvents() {
+    initWS((event) => {
+      const string = event.data;
+
+      if (string === 'BOMB') {
+        this.createBomb();
+      }
+
+      this.populateTextBox(string);
+    });
+  }
+
+  private createBomb() {
+    console.log('it is a bomb');
   }
 
   private initPlatformConfig(): void {
