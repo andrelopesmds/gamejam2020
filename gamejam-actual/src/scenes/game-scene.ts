@@ -71,17 +71,23 @@ export class GameScene extends Phaser.Scene {
   private setupBombs() {
     this.bombs = this.physics.add.group();
     this.physics.add.collider(this.bombs, this.platforms);
+    this.physics.add.collider(this.bombs, this.floor);
     this.physics.add.collider(this.player, this.bombs, this.playerHitsBomb, null, this);
 
     this.createBomb();
   }
 
   private createBomb() {
-    var x = (this.player.getCenter().x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-    var bomb = this.bombs.create(x, 16, 'bomb');
+    var px = this.player.getCenter().x
+    var bombX = Phaser.Math.Between(px, px + 800)
+    var bomb = this.bombs.create(bombX, 16, 'bomb');
     bomb.setBounce(1);
-    bomb.setCollideWorldBounds(true);
     bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+
+    setTimeout(() => {
+      this.bombs.remove(bomb);
+      bomb.destroy();
+     }, 10 * 1000);
   }
 
   private playerHitsBomb() {
@@ -125,31 +131,31 @@ export class GameScene extends Phaser.Scene {
     initWS((event) => {
       const string = event.data;
 
-      if (string === 'BOMB') {
+      if (string === EventType.BOMB) {
         this.createBomb();
         return;
       }
 
-      if (string === 'HIGH_SPEED') {
+      if (string === EventType.HIGH_SPEED) {
         this.playerVelocity = 250;
         return;
-      } else if (string === 'NORMAL_SPEED') {
+      } else if (string === EventType.NORMAL_SPEED) {
         this.playerVelocity = 150;
         return;
-      } else if (string === 'LOW_SPEED') {
+      } else if (string === EventType.LOW_SPEED) {
         this.playerVelocity = 50;
         return;
       }
 
-      if (string === 'LAVA_ON') {
+      if (string === EventType.LAVA_ON) {
         this.populateTextBox('Floor is dangerous! 😈');
         setTimeout(() => { 
           this.floorToLava();
           this.populateTextBox('');
         }, 3 * 1000);
-        
         return;
-      } else if (string === 'LAVA_OFF') {
+     
+      } else if (string === EventType.LAVA_OFF) {
         this.lavaToFloor();
         return;
       }
@@ -294,4 +300,15 @@ interface PlatformConfig {
   maxY: number;
   minAmount: number;
   maxAmount: number;
+}
+
+enum EventType {
+  HIGH_SPEED = 'HIGH_SPEED',
+  NORMAL_SPEED = 'NORMAL_SPEED',
+  LOW_SPEED = 'LOW_SPEED',
+
+  BOMB = 'BOMB',
+
+  LAVA_ON = 'LAVA_ON',
+  LAVA_OFF = 'LAVA_OFF'
 }
