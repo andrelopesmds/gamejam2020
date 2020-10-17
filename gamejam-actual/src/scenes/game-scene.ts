@@ -12,14 +12,16 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 export class GameScene extends Phaser.Scene {
   public platformConfig: PlatformConfig;
 
-  private playerSkin = 'dude';
+  private playerSkin = 'andre';
   private cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys;
   private player: Phaser.Physics.Arcade.Sprite;
   private platforms: Phaser.Physics.Arcade.StaticGroup;
   private mapRenderBounds: { left: number; right: number };
   private textBox: Phaser.GameObjects.Text;
   private bombs: Phaser.Physics.Arcade.Group;
+  private chunkSize = 2048;
   private playerVelocity = 150;
+
 
   constructor() {
     super(sceneConfig);
@@ -42,16 +44,17 @@ export class GameScene extends Phaser.Scene {
     createAnimations(this.anims, 'andre');
 
     this.cameras.main.startFollow(this.player);
+    this.cameras.main.setBackgroundColor('#4dc9ff');
 
     // This is a nice helper Phaser provides to create listeners for some of the most common keys.
     this.cursorKeys = this.input.keyboard.createCursorKeys();
 
     this.platforms = this.physics.add.staticGroup();
     this.physics.add.collider(this.player, this.platforms);
-    this.mapRenderBounds = { left: 0, right: getGameWidth(this) };
+    this.mapRenderBounds = { left: 0, right: 2048 };
 
     this.initPlatformConfig();
-    this.createInitialPlatforms();
+    this.generateChunk(0);
 
     this.createTextBox();
     this.populateTextBox('');
@@ -128,23 +131,30 @@ export class GameScene extends Phaser.Scene {
 
   private initPlatformConfig(): void {
     this.platformConfig = {
-      size: 100,
-      minY: getGameHeight(this) / 2,
-      maxY: getGameHeight(this), // this is actually the bottom
+      size: 256,
+      minY: getGameHeight(this) * 0.5,
+      maxY: getGameHeight(this) * 0.9, // this is actually the bottom
       minAmount: 1,
-      maxAmount: 3,
+      maxAmount: 2,
     };
   }
 
-  private createInitialPlatforms(): void {
-    this.platforms.create(getGameWidth(this) * 0.75, getGameHeight(this) * 0.73, 'platform');
-    this.platforms.create(getGameWidth(this) * 0.5, getGameHeight(this) * 0.75, 'platform');
-    this.platforms.create(getGameWidth(this) * 0.25, getGameHeight(this) * 0.72, 'platform');
-
+  private generateChunk(position: number): void {
+    const platWidth = this.platformConfig.size;
+    for (let x = position + platWidth / 2; x < position + this.chunkSize; x += 1.1 * platWidth) {
+      const amount = randInt(this.platformConfig.minAmount, this.platformConfig.maxAmount);
+      for (let i = 0; i < amount; i++) {
+        const y = randInt(this.platformConfig.minY, this.platformConfig.maxY);
+        const deltaX = (0.1 - Math.random() * 0.2) * platWidth;
+        this.platforms.create(x + deltaX, y, 'platform');
+      }
+    }
     // floor
     this.platforms
-      .create(getGameWidth(this) / 2, getGameHeight(this), 'platform')
-      .setScale(8)
+      .create(0, 0, 'platform')
+      .setOrigin(0.5, 1)
+      .setDisplaySize(2048, 32)
+      .setPosition(position + 1024, getGameHeight(this))
       .refreshBody();
   }
 
@@ -180,35 +190,16 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createPlatformsRight(): void {
-    const amount = randInt(this.platformConfig.minAmount, this.platformConfig.maxAmount);
-    console.log('amount of plats', amount);
-    for (let i = 0; i < amount; i++) {
-      const y = randInt(this.platformConfig.minY, this.platformConfig.maxY);
-      console.log('Create plat, y=', y);
-
-      const newPlatformX = this.mapRenderBounds.right + this.platformConfig.size / 2;
-      this.platforms.create(newPlatformX, y, 'platform');
-    }
-
-    this.mapRenderBounds.right += 3 * this.platformConfig.size;
+    this.generateChunk(this.mapRenderBounds.right);
+    this.mapRenderBounds.right += 2048;
   }
 
   private createPlatformsLeft(): void {
-    const amount = randInt(this.platformConfig.minAmount, this.platformConfig.maxAmount);
-    console.log('amount of plats', amount);
-    for (let i = 0; i < amount; i++) {
-      const y = randInt(this.platformConfig.minY, this.platformConfig.maxY);
-      console.log('Create plat, y=', y);
-
-      const newPlatformX = this.mapRenderBounds.left - this.platformConfig.size / 2;
-      this.platforms.create(newPlatformX, y, 'platform');
-    }
-
-    this.mapRenderBounds.left -= 3 * this.platformConfig.size;
+    this.generateChunk(this.mapRenderBounds.left - 2048);
+    this.mapRenderBounds.left -= 2048;
   }
 
   public update(): void {
-    // Every frame, we create a new velocity for the sprite based on what keys the player is holding down.
     if (this.player.x > 1000) {
       this.playerSkin = 'ilpo';
     } else if (this.player.x < 0) {
