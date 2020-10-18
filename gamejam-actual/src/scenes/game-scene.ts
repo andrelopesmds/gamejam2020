@@ -317,13 +317,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   public update(): void {
-    if (this.player.x > 1000) {
-      this.playerSkin = 'ilpo';
-    } else if (this.player.x < 0) {
-      this.playerSkin = 'rasse';
-    } else {
-      this.playerSkin = 'andre';
-    }
+    const foo = Math.floor(Math.abs(this.player.x % 3000) / 1000);
+
+    this.playerSkin = ['andre', 'ilpo', 'rasse'][foo];
 
     const distanceInPixels = this.player.x - getGameWidth(this) / 2;
     this.scoreCounter.setText(`score: ${Math.round(distanceInPixels / 10)}m`);
