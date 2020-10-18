@@ -278,7 +278,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     if (this.cursorKeys.up.isDown && this.player.body.touching.down) {
-      this.player.setVelocityY(-330);
+      this.player.setVelocityY(-700);
     }
   }
 
