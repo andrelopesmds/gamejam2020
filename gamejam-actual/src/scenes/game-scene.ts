@@ -116,7 +116,7 @@ export class GameScene extends Phaser.Scene {
     this.playerVelocity = 1000;
     setTimeout(() => {
       this.playerVelocity = 150;
-    }, 2 * 1000);
+    }, 5 * 1000);
   }
 
   private setupBombs() {
