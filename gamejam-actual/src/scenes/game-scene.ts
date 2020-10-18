@@ -1,5 +1,5 @@
 import { Input } from 'phaser';
-import createAnimations from './animations';
+import { playerAnimation, botAnimation } from './animations';
 import { getGameWidth, getGameHeight } from '../helpers';
 import { initWS } from '../websocket/websocket';
 import Bullets from './bullet';
@@ -45,9 +45,10 @@ export class GameScene extends Phaser.Scene {
     // this.player.setCollideWorldBounds(true);
 
     //  Our player animations, turning, walking left and walking right.
-    createAnimations(this.anims, 'ilpo');
-    createAnimations(this.anims, 'rasse');
-    createAnimations(this.anims, 'andre');
+    playerAnimation(this.anims, 'ilpo');
+    playerAnimation(this.anims, 'rasse');
+    playerAnimation(this.anims, 'andre');
+    botAnimation(this.anims);
 
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBackgroundColor('#111111');
@@ -305,6 +306,11 @@ export class GameScene extends Phaser.Scene {
     this.killbots.getChildren().forEach((bot: Phaser.Physics.Arcade.Sprite) => {
       if (Math.abs(this.player.x - bot.x) < getGameWidth(this) / 4) {
         this.bullets.spawnBullet(bot.x, bot.y, this.player.x < bot.x ? 'left' : 'right');
+      }
+      if (this.player.x > bot.x) {
+        bot.anims.play('bot-right');
+      } else {
+        bot.anims.play('bot-left');
       }
     });
   }
