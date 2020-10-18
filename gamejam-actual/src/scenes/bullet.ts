@@ -22,7 +22,7 @@ export default class Bullets {
 
   public spawnBullet(x: number, y: number, direction: 'left' | 'right'): void {
     const bg = direction === 'left' ? this.leftBullets : this.rightBullets;
-    const bullet = bg.create(x, y, 'bullet') as Physics.Arcade.Sprite;
+    const bullet = bg.create(x, y, `bullet-${direction}`) as Physics.Arcade.Sprite;
     // remove bullets after a time
     this.scene.time.addEvent({
       delay: 2000,
