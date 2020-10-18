@@ -29,6 +29,7 @@ export class GameScene extends Phaser.Scene {
   private chunkSize = 2048;
   private playerVelocity = 150;
   private bullets: Bullets;
+  private items: Phaser.Physics.Arcade.Group;
 
   constructor() {
     super(sceneConfig);
@@ -83,6 +84,39 @@ export class GameScene extends Phaser.Scene {
         this.updateKillbots();
       },
     });
+
+
+    this.setupRocket();
+    this.time.addEvent({
+      delay: 10000,
+      loop: true,
+      callback: () => {
+        this.createRocket();
+      },
+    });
+  }
+
+
+  private setupRocket() {
+    this.items = this.physics.add.group();
+    this.physics.add.collider(this.items, this.platforms);
+    this.physics.add.collider(this.items, this.floor);
+    this.physics.add.overlap(this.player, this.items, this.collectItem, null, this);
+
+    this.createRocket();
+  }
+  private createRocket() {
+    var px = this.player.getCenter().x
+    var rocket = this.items.create(px + 500, 16, 'item');
+    rocket.setBounce(0.2);
+  }
+
+  private collectItem(player, item) {
+    item.disableBody(true, true);
+    this.playerVelocity = 1000;
+    setTimeout(() => {
+      this.playerVelocity = 150;
+    }, 2 * 1000);
   }
 
   private setupBombs() {
@@ -104,7 +138,7 @@ export class GameScene extends Phaser.Scene {
     setTimeout(() => {
       this.bombs.remove(bomb);
       bomb.destroy();
-     }, 10 * 1000);
+    }, 10 * 1000);
   }
 
   private setupKillbots() {
@@ -133,7 +167,7 @@ export class GameScene extends Phaser.Scene {
     this.restartGame(5);
   }
 
-  private restartGame(seconds: number) : void {
+  private restartGame(seconds: number): void {
     setTimeout(() => {
       this.lavaToFloor();
       this.scene.restart();
@@ -179,12 +213,12 @@ export class GameScene extends Phaser.Scene {
 
       if (string === EventType.LAVA_ON) {
         this.populateTextBox('Floor is dangerous! 😈');
-        setTimeout(() => { 
+        setTimeout(() => {
           this.floorToLava();
           this.populateTextBox('');
         }, 3 * 1000);
         return;
-     
+
       } else if (string === EventType.LAVA_OFF) {
         this.lavaToFloor();
         return;
