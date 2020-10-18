@@ -25,18 +25,13 @@ export class MainMenuScene extends Phaser.Scene {
       .setFontSize(36);
 
     this.add
-      .text(100, 100, 'by Team Kova Ajo', {
+      .text(120, 100, 'by Team Kova Ajo', {
         fill: '#FFFFFF',
       })
-      .setFontSize(36);
+      .setFontSize(24);
 
-
-    new MenuButton(this, 100, 150, 'Start Game', () => {
+    new MenuButton(this, 100, 250, 'Start Game', () => {
       this.scene.start('Game');
     });
-
-    new MenuButton(this, 100, 250, 'Settings', () => console.log('settings button clicked'));
-
-    new MenuButton(this, 100, 350, 'Help', () => console.log('help button clicked'));
   }
 }
