@@ -1,4 +1,5 @@
 import { MenuButton } from '../ui/menu-button';
+import { getGameWidth, getGameHeight } from '../helpers';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -15,11 +16,20 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   public create(): void {
+    this.add.image(0, 0, 'menu-bg').setOrigin(0, 0).setDisplaySize(getGameWidth(this), getGameHeight(this));
+
     this.add
-      .text(100, 50, 'This is a sample main menu. Click the "Start" button below to run your game.', {
+      .text(100, 50, 'Never ending escape', {
         fill: '#FFFFFF',
       })
-      .setFontSize(24);
+      .setFontSize(36);
+
+    this.add
+      .text(100, 100, 'by Team Kova Ajo', {
+        fill: '#FFFFFF',
+      })
+      .setFontSize(36);
+
 
     new MenuButton(this, 100, 150, 'Start Game', () => {
       this.scene.start('Game');
