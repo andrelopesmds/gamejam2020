@@ -34,6 +34,13 @@ Event_string: 'LAVA_OFF'
 Description: Floor comes back to normal
 ```
 
+## Bot
+```
+Event_string: 'KILLBOT'
+Description: Creates enemies
+```
+
+
 
 # Event ideas
 
