@@ -3,6 +3,7 @@ import { playerAnimation, botAnimation } from './animations';
 import { getGameWidth, getGameHeight } from '../helpers';
 import { initWS } from '../websocket/websocket';
 import Bullets from './bullet';
+import { EventType } from '../eventType';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -111,7 +112,7 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.killbots, this.platforms);
     this.physics.add.collider(this.killbots, this.floor);
 
-    this.createKillBot();
+    //this.createKillBot(); // this line can be removed once we create 'KILLBOT' event on the backend
   }
 
   private createKillBot() {
@@ -189,7 +190,7 @@ export class GameScene extends Phaser.Scene {
         return;
       }
 
-      if (string === 'KILLBOT') {
+      if (string === EventType.KILLBOT) {
         this.createKillBot();
         return;
       }
@@ -324,10 +325,6 @@ export class GameScene extends Phaser.Scene {
       this.playerSkin = 'andre';
     }
 
-    if (this.cursorKeys.space.isDown) {
-      this.bullets.spawnBullet(0, this.player.y, 'right');
-    }
-
     const distanceInPixels = this.player.x - getGameWidth(this) / 2;
     this.scoreCounter.setText(`score: ${Math.round(distanceInPixels / 10)}m`);
     this.updateSpeed();
@@ -352,15 +349,4 @@ interface PlatformConfig {
   maxY: number;
   minAmount: number;
   maxAmount: number;
-}
-
-enum EventType {
-  HIGH_SPEED = 'HIGH_SPEED',
-  NORMAL_SPEED = 'NORMAL_SPEED',
-  LOW_SPEED = 'LOW_SPEED',
-
-  BOMB = 'BOMB',
-
-  LAVA_ON = 'LAVA_ON',
-  LAVA_OFF = 'LAVA_OFF'
 }
